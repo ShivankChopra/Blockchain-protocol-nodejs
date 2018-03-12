@@ -1,22 +1,35 @@
-const Block = require('./blockchain/Block.js');
+const Blockchain = require('./blockchain/main.blockchain.js');
 
- function testBlock(){
- const genesis = Block.createGenesisBlock();
- console.log(genesis.toString());
+const testBlockChain = () => {
+       let bc = new Blockchain();
+       let bc2 = new Blockchain();
 
- let count = 0;
- let lastHash = genesis.hash;
+       let count = 0;
 
- do{
-   let timestamp = Date.now();
-   let data = "This is a test block nigga " + count + "!";
-   let hash = Block.hash(timestamp, lastHash, data);
-   const block1 = new Block(timestamp, lastHash, hash, data);
-   console.log(block1.toString());
+       do{
+         let timestamp = Date.now();
+         let data = "This is a test block nigga " + count + "!";
 
-   lastHash = hash;
-   count++;
- }while(count<10);
+         bc.addNewBlock(data);
+         bc2.addNewBlock(data);
+         count++;
+       }while(count<10);
+
+       console.log("Blockchain :")
+
+       for(let i=0; i<bc.chain.length; i++){
+         console.log(bc.chain[i].toString());
+       }
+
+       console.log("Creating a new chain that is shorter than above");
+
+       bc.replaceChain(new Blockchain().chain);
+
+       // trying to tamper Blockchain
+       bc2.chain[7].data = "Muhuhuhahahaha i'm evil";
+       bc2.addNewBlock("haha i will make tampered chain to be accepted by making it big!");
+
+       bc.replaceChain(bc2.chain);
 }
 
-testBlock();
+testBlockChain();
