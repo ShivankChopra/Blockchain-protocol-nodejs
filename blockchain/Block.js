@@ -21,7 +21,7 @@ class Block{
 
   // statically create genesis block
   static createGenesisBlock(){
-    return new this('Shivanks Time!', '--N-A--', 'Sh1v4nk0017', 'A secret message to future users');
+    return new this('Shivanks Time!', '--N-A--', 'Genesis Block', 'Sh1v4nk0017');
   }
 
   // creates a new block using a given (previous) block and new data
@@ -35,7 +35,7 @@ class Block{
 
   // generate hash for a block
   static hash(timestamp, lastHash, data){
-    return SHA256(`${timestamp}${lastHash}${data}`);
+    return SHA256(`${timestamp}${lastHash}${data}`).toString();
   }
 
   // returns hash of given block for verification purpose
