@@ -1,7 +1,7 @@
 const Websocket = require('ws');
 
 const P2P_PORT = process.env.P2P_PORT || 5001;
-// Hold peers (as array) as specified in run command. (',' seperated addresses of peers eg. ws/localhost:5001,.. )
+// Hold peers (as array) as specified in run command. (',' seperated addresses of peers eg. ws://localhost:5001,.. )
 const PEERS = process.env.PEERS ? process.env.PEERS.split(',') : [];
 
 class P2pServer{
@@ -31,23 +31,12 @@ class P2pServer{
   }
 
   sendChainTo(socket){
-    console.log("Sent Blockchain :")
-
-    for(let i=0; i<this.blockchain.length; i++){
-      console.log(this.blockchain[i].toString());
-    }
     socket.send(JSON.stringify(this.blockchain.chain));
   }
 
   messageHandler(socket){
     socket.on('message', message => {
       const recievedChain = JSON.parse(message);
-      console.log("Received lockchain :")
-
-      for(let i=0; i<recievedChain.length; i++){
-        console.log(recievedChain[i].toString());
-      }
-
       this.blockchain.replaceChain(recievedChain);
     });
   }

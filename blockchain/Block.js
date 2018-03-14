@@ -1,8 +1,11 @@
 const SHA256 = require('crypto-js/sha256');
 
+const DIFFICULTY = 4;
+
 class Block{
   // Initialize block's properties
-  constructor(timestamp, lastHash, hash, data){
+  constructor(timestamp, lastHash, hash, data, nonce){
+    this.nonce = nonce;
     this.timestamp = timestamp;
     this.lastHash = lastHash;
     this.hash = hash;
@@ -12,7 +15,7 @@ class Block{
   // Util function to convert block to string
   toString(){
     return `Block-
-
+            Nonce    : ${this.nonce}
             Timestamp: ${this.timestamp}
             LastHash : ${this.lastHash}
             Hash     : ${this.hash}
@@ -21,26 +24,32 @@ class Block{
 
   // statically create genesis block
   static createGenesisBlock(){
-    return new this('Shivanks Time!', '--N-A--', 'Genesis Block', 'Sh1v4nk0017');
+    return new this('Shivanks Time!', '--N-A--', 'Genesis Block', 'Sh1v4nk0017', 0);
   }
 
   // creates a new block using a given (previous) block and new data
   static mineBlock(lastBlock, data){
-    const timestamp = Date.now();
+    let hash, timestamp;
     const lastHash = lastBlock.hash;
-    const hash = Block.hash(timestamp, lastHash, data);
+    let nonce = lastBlock.nonce;
 
-    return new this(timestamp, lastHash, hash, data);
+    do{
+      nonce ++;
+      timestamp = Date.now();
+      hash = Block.hash(timestamp, lastHash, data, nonce);
+    }while(hash.substring(0, DIFFICULTY) !== '0'.repeat(DIFFICULTY));
+
+    return new this(timestamp, lastHash, hash, data, nonce);
   }
 
   // generate hash for a block
-  static hash(timestamp, lastHash, data){
-    return SHA256(`${timestamp}${lastHash}${data}`).toString();
+  static hash(timestamp, lastHash, data, nonce){
+    return SHA256(`${timestamp}${lastHash}${data}${nonce}`).toString();
   }
 
   // returns hash of given block for verification purpose
   static getBlockHash(block){
-    return this.hash(block.timestamp, block.lastHash, block.data);
+    return this.hash(block.timestamp, block.lastHash, block.data, block.nonce);
   }
 
 }
