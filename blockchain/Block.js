@@ -1,4 +1,4 @@
-const SHA256 = require('crypto-js/sha256');
+const ChainUtil = require('../chainUtil.js');
 
 const DIFFICULTY = 4;
 
@@ -44,7 +44,7 @@ class Block{
 
   // generate hash for a block
   static hash(timestamp, lastHash, data, nonce){
-    return SHA256(`${timestamp}${lastHash}${data}${nonce}`).toString();
+    return ChainUtil.hash(`${timestamp}${lastHash}${data}${nonce}`);
   }
 
   // returns hash of given block for verification purpose
