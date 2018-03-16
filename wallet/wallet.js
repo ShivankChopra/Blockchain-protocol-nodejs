@@ -16,7 +16,7 @@ class Wallet{
                     Balance: ${this.balance}`;
   }
 
-  issueTransaction(address, amount){
+  issueTransaction(address, amount, transactionPool){
     if(amount > this.balance){
       console.log(`Unable to create transaction. Your balance is less than ${amount}`);
       return null;
@@ -33,8 +33,11 @@ class Wallet{
       //deduct amount from Balance
       this.balance -= amount;
 
-      //create and return transactionInput
-      return new Transaction(transactionInput, transactionOutputs);
+      //create transaction and push in unverified transaction pool
+      const transaction = new Transaction(transactionInput, transactionOutputs);
+      transactionPool.addNewTransaction(transaction);
+
+      return transaction;
     }
   }
 
