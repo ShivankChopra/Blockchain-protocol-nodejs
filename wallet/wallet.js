@@ -21,6 +21,10 @@ class Wallet{
       console.log(`Unable to create transaction. Your balance is less than ${amount}`);
       return null;
     }
+    else if(this.address == 'blockchain-wallet'){
+      console.log('Unable to create transaction. This is a blockchain wallet');
+      return null;
+    }
     else{
       // create transaction outputs
       const transactionOutputs = Transaction.createOutputs(this.address, address, amount, this.balance);
@@ -41,10 +45,40 @@ class Wallet{
     }
   }
 
+  issueRewardTransaction(minerAddress, rewardAmount){
+    if(this.address == 'blockchain-wallet'){
+      // create transaction outputs
+      const output = Transaction.createSingleOutput(rewardAmount, minerAddress);
+
+      const transactionOutputs = {
+        toReciever: rewardAmount,
+        toSelf: 'NA'
+      }
+
+      // create transaction inputs
+      const uuid = ChainUtil.getUuid();
+      const signature = this.issueSignature(transactionOutputs);
+      const transactionInput = Transaction.createInput(uuid, 'NA', rewardAmount, signature);
+
+      const rewardTransaction = new Transaction(transactionInput, transactionOutputs);
+      return rewardTransaction;
+    }
+    else{
+      console.log('Not a blockchain wallet!');
+      return null;
+    }
+  }
+
   issueSignature(outputs){
     const dataHash = ChainUtil.hash(outputs);
     const signature = this.keyPair.sign(dataHash);
     return signature;
+  }
+
+  static getBlockchainWallet(){
+    const blockchainWallet = new this();
+    blockchainWallet.address = 'blockchain-wallet';
+    return blockchainWallet;
   }
 
 }

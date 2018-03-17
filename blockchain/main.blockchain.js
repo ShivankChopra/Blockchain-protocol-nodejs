@@ -22,7 +22,7 @@ class Blockchain{
       if(prevBlock.hash !== currentBlock.lastHash || currentBlock.hash !== Block.getBlockHash(currentBlock))
          return false;
     }
-    
+
     return true;
   }
 

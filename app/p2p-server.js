@@ -7,7 +7,8 @@ const PEERS = process.env.PEERS ? process.env.PEERS.split(',') : [];
 // utility to store message types that could be sent to sockets
 const MESSAGE_TYPE = {
   chain : 'CHAIN',
-  transaction : 'TRANSACTION'
+  transaction : 'TRANSACTION',
+  clear : 'CLEAR'
 };
 
 class P2pServer{
@@ -51,6 +52,12 @@ class P2pServer{
     }));
   }
 
+  sendClear(socket){
+    socket.send(JSON.stringify({
+      type : MESSAGE_TYPE.clear,
+    }));
+  }
+
   messageHandler(socket){
     socket.on('message', message => {
       const messageObj = JSON.parse(message);
@@ -61,6 +68,10 @@ class P2pServer{
 
       if(messageObj.type == MESSAGE_TYPE.transaction){
         this.transactionPool.addNewTransaction(messageObj.transaction);
+      }
+
+      if(messageObj.type == MESSAGE_TYPE.clear){
+        this.transactionPool.clear();
       }
 
     });
@@ -81,6 +92,17 @@ class P2pServer{
     this.sockets.forEach(socket => {
       if(socket.readyState === Websocket.OPEN){
         this.sendTransactionTo(socket, transaction);
+      }
+      else {
+        console.log('Socket: ' + socket._socket + ' is closed!');
+      }
+    });
+  }
+
+  broadcastClear(){
+    this.sockets.forEach(socket => {
+      if(socket.readyState === Websocket.OPEN){
+        this.sendClear(socket);
       }
       else {
         console.log('Socket: ' + socket._socket + ' is closed!');
