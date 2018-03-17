@@ -27,7 +27,7 @@ class TransactionPool{
       // verifySignature
       const signature = transaction.input.signature;
       const dataHash = ChainUtil.hash(transaction.outputs);
-      const publicKey = transaction.input.senderAddress;
+      const publicKey = transaction.input.address;
 
       if(!ChainUtil.verifySignature(publicKey, signature, dataHash)){
         console.log(`Transaction ${transaction.input.id} from ${transaction.input.senderAddress} was invalid.`);

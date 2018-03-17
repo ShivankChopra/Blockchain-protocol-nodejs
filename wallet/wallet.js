@@ -16,7 +16,9 @@ class Wallet{
                     Balance: ${this.balance}`;
   }
 
-  issueTransaction(address, amount, transactionPool){
+  issueTransaction(address, amount, transactionPool, blockchain){
+    this.balance = this.calculateBalance(blockchain);
+
     if(amount > this.balance){
       console.log(`Unable to create transaction. Your balance is less than ${amount}`);
       return null;
@@ -51,14 +53,16 @@ class Wallet{
       const output = Transaction.createSingleOutput(rewardAmount, minerAddress);
 
       const transactionOutputs = {
-        toReciever: rewardAmount,
-        toSelf: 'NA'
+        toReciever: {
+          address: minerAddress,
+          amount: rewardAmount
+        }
       }
 
       // create transaction inputs
       const uuid = ChainUtil.getUuid();
       const signature = this.issueSignature(transactionOutputs);
-      const transactionInput = Transaction.createInput(uuid, 'NA', rewardAmount, signature);
+      const transactionInput = Transaction.createInput(uuid, 'blockchain-wallet', 'NA', signature);
 
       const rewardTransaction = new Transaction(transactionInput, transactionOutputs);
       return rewardTransaction;
@@ -73,6 +77,30 @@ class Wallet{
     const dataHash = ChainUtil.hash(outputs);
     const signature = this.keyPair.sign(dataHash);
     return signature;
+  }
+
+  calculateBalance(blockchain){
+    let balance = 0;
+    let foundBlock = false;
+    let itr = blockchain.chain.length - 1;
+
+    while(!foundBlock && itr > 0){
+      const block = blockchain.chain[itr];
+      block.data.forEach(transaction => {
+        if(transaction.outputs.toReciever.address == this.address){
+          balance += transaction.outputs.toReciever.amount;
+        }
+
+        if(transaction.input.address == this.address){
+          foundBlock = true;
+          balance += transaction.outputs.toSelf.amount;
+        }
+      });
+
+      itr--;
+    }
+
+    return this.balance = balance;
   }
 
   static getBlockchainWallet(){

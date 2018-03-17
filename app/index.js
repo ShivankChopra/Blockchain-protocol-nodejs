@@ -32,7 +32,7 @@ app.post('/mine-block', (req, res) => {
 // issue a new transaction
 app.post('/transact', (req, res) => {
   const {address, amount} = req.body;
-  const transaction = wallet.issueTransaction(address, amount, transactionPool);
+  const transaction = wallet.issueTransaction(address, amount, transactionPool, blockchain);
   p2pServer.broadcastTransaction(transaction);
   res.status(200).json(transaction);
 });
@@ -45,6 +45,12 @@ app.get('/unverified-transactions', (req, res) => {
 // get public key / address of the Wallet
 app.get('/public-key', (req, res) => {
   res.status(200).send(wallet.address);
+});
+
+// get current Balance
+app.get('/balance', (req, res) =>{
+  wallet.calculateBalance(blockchain);
+  res.status(200).json(wallet.balance);
 });
 
 app.listen(HTTP_PORT, () => {

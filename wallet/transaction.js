@@ -10,7 +10,7 @@ class Transaction{
     const input = {
       id : uuid,
       timeStamp: time,
-      senderAddress: senderAddress,
+      address: senderAddress,
       balance: balance,
       signature: signature
     };
@@ -20,7 +20,7 @@ class Transaction{
 
   static createSingleOutput(amount, recieverAddress){
     const output = {
-      recieverAddress: recieverAddress,
+      address: recieverAddress,
       amount: amount
     };
 
@@ -38,6 +38,6 @@ class Transaction{
 
     return outputs;
   }
-}  
+}
 
 module.exports = Transaction;
