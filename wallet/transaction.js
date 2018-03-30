@@ -1,3 +1,7 @@
+/**
+ * This class provides structure to hold transactions and methods to create
+ * various components of it like tx input and tx outputs.
+ */
 class Transaction{
   constructor(input, outputs){
     this.input = input;

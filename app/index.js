@@ -53,8 +53,10 @@ app.get('/balance', (req, res) =>{
   res.status(200).json(wallet.balance);
 });
 
+// start app
 app.listen(HTTP_PORT, () => {
   console.log(`Started server on port ${HTTP_PORT}.`);
 });
 
+// start p2p server
 p2pServer.listen();

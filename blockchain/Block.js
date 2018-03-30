@@ -1,5 +1,6 @@
 const ChainUtil = require('../chainUtil.js');
 
+// number of zeros hash should begin with
 const DIFFICULTY = 4;
 
 class Block{

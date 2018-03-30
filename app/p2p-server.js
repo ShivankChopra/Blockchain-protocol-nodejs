@@ -19,8 +19,13 @@ class P2pServer{
   }
 
   listen(){
+    // start new server on default/specified port
     const server = new Websocket.Server({port : P2P_PORT});
+
+    // connect to a socket on connection event
     server.on('connection', socket => {this.connectSocket(socket)});
+
+    // connect to specified peers
     this.connectToPeers();
   }
 
@@ -34,7 +39,11 @@ class P2pServer{
   connectSocket(socket){
     this.sockets.push(socket);
     console.log("Socket connected");
+
+    // handle incoming transaction pool or chain
     this.messageHandler(socket);
+
+    // send it's chain to other sockets
     this.sendChainTo(socket);
   }
 

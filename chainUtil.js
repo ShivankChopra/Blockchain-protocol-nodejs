@@ -1,4 +1,4 @@
-const EC = require('elliptic').ec;
+const EC = require('elliptic').ec; // to issue certificates
 const uuidv1 = require('uuid/v1');
 const SHA256 = require('crypto-js/sha256');
 
@@ -9,6 +9,7 @@ class ChainUtil{
     return ec.genKeyPair();
   }
 
+  // to issue unique timestamp based id to transactions
   static getUuid(){
     return uuidv1();
   }

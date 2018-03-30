@@ -1,13 +1,13 @@
 const Transaction = require('./transaction.js');
 const ChainUtil = require('../chainUtil.js');
 
-const INITIAL_BALANCE = 500;
+//const INITIAL_BALANCE = 500;
 
 class Wallet{
   constructor(){
     this.balance = INITIAL_BALANCE;
     this.keyPair = ChainUtil.generateKeyPair();
-    this.address = this.keyPair.getPublic().encode('hex');
+    this.address = this.keyPair.getPublic().encode('hex'); // address is the public key of wallet
   }
 
   toString(){
@@ -17,12 +17,15 @@ class Wallet{
   }
 
   issueTransaction(address, amount, transactionPool, blockchain){
+    // first calculate balance from the blockchain
     this.balance = this.calculateBalance(blockchain);
 
+    // if balance is less than tx being made
     if(amount > this.balance){
       console.log(`Unable to create transaction. Your balance is less than ${amount}`);
       return null;
     }
+    // just checking if it isn't blockchain rewarding wallet
     else if(this.address == 'blockchain-wallet'){
       console.log('Unable to create transaction. This is a blockchain wallet');
       return null;
@@ -47,6 +50,7 @@ class Wallet{
     }
   }
 
+  // issue reward for mining by blockchain wallet
   issueRewardTransaction(minerAddress, rewardAmount){
     if(this.address == 'blockchain-wallet'){
       // create transaction outputs
@@ -87,10 +91,13 @@ class Wallet{
     while(!foundBlock && itr > 0){
       const block = blockchain.chain[itr];
       block.data.forEach(transaction => {
+        // add all amounts issued to this wallet
         if(transaction.outputs.toReciever.address == this.address){
           balance += transaction.outputs.toReciever.amount;
         }
 
+        /* check the most recent transaction by this wallet and add it's outputs.
+           This is assumed that balance in recent transaction was valid */
         if(transaction.input.address == this.address){
           foundBlock = true;
           balance += transaction.outputs.toSelf.amount;
